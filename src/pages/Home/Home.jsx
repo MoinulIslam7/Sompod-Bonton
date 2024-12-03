@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CheckboxList from "../Checkbox/CheckboxList";
+import calculateShares from './index.js';
 
 // Function to convert English numbers to Bangla digits
 const englishToBanglaDigits = (number) => {
@@ -16,7 +17,7 @@ const Home = () => {
     { label: "স্বামী", checked: false, input: false, value: "1" },
     { label: "স্ত্রী", checked: false, input: true, value: "1" },
     { label: "পুত্র", checked: false, input: true, value: "1" },
-    { label: " মৃত পুত্র", checked: false, input: true, value: "1" },
+    { label: "মৃত পুত্র", checked: false, input: true, value: "1" },
     { label: "কন্যা", checked: false, input: true, value: "1" },
     { label: "মৃত কন্যা", checked: false, input: true, value: "1" },
     { label: "পিতা", checked: false, input: true, value: "1" },
@@ -43,28 +44,46 @@ const Home = () => {
     { label: "চাচাতো ভাইয়ের পুত্রের পুত্র", checked: false, input: true, value: "1" },
   ]);
 
-
-  const handleChange = (index, newValue = null) => {
-    setItems((prevItems) =>
-      prevItems.map((item, i) =>
-        i === index
-          ? {
-            ...item,
-            checked: newValue === null ? !item.checked : item.checked,
-            value: newValue !== null ? newValue : item.value,
-          }
-          : item
-      )
-    );
-  };
-
-
   const [memberCount, setMemberCount] = useState(0);
   const [assetDetails, setAssetDetails] = useState({
     gold: 0,
+    rupa: 0,
     land: 0,
     cash: 0,
   });
+
+  const handleChange = (index, newValue = null) => {
+    const updatedItems = items.map((item, i) =>
+      i === index
+        ? {
+          ...item,
+          checked: newValue === null ? !item.checked : item.checked,
+          value: newValue !== null ? newValue : item.value,
+        }
+        : item
+    );
+
+    setItems(updatedItems);
+
+    // Calculate total member count dynamically
+    const count = updatedItems.reduce(
+      (total, item) => (item.checked ? total + (Number(item.value) || 0) : total),
+      0
+    );
+    setMemberCount(count);
+  };
+
+  const handleSubmit = () => {
+    // Gather selected individuals and their input values
+    const selectedItems = items.filter(item => item.checked).map(item => ({
+      label: item.label,
+      value: item.value,
+    }));
+
+    // Call the inheritance logic to calculate shares
+    const result = calculateShares(selectedItems, assetDetails);
+    console.log(result); // You can display this in your UI or alert
+  };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-8">
@@ -80,14 +99,23 @@ const Home = () => {
         <h2 className="bg-yellow-500 text-white text-lg font-semibold py-2 px-4 rounded-md mb-4">
           সদস্য বিবরণ
         </h2>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-700">মোট সদস্য সংখ্যা</span>
-          <input
-            type="text"
-            value={englishToBanglaDigits(memberCount)}
-            onChange={(e) => setMemberCount(parseInt(e.target.value) || 0)}
-            className="w-20 h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200 text-center"
-          />
+        <div className="space-y-2">
+          {items
+            .filter((item) => item.checked)
+            .map((item, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <span className="text-gray-700">{item.label}</span>
+                <span className="text-gray-700 font-medium">
+                  {englishToBanglaDigits(Number(item.value) || 0)}
+                </span>
+              </div>
+            ))}
+        </div>
+        <div className="mt-4 border-t pt-4 flex justify-between items-center">
+          <span className="text-gray-800 font-semibold">মোট সদস্য সংখ্যা</span>
+          <span className="text-lg font-bold text-gray-900">
+            {englishToBanglaDigits(memberCount)}
+          </span>
         </div>
       </div>
 
@@ -101,11 +129,11 @@ const Home = () => {
             <label className="text-gray-700">জমি (শতাংশ)</label>
             <input
               type="number"
-              value={assetDetails.land}
+              value={(assetDetails.land)}
               onChange={(e) =>
                 setAssetDetails((prev) => ({
                   ...prev,
-                  land: parseInt(e.target.value) || 0,
+                  land: parseInt(e.target.value),
                 }))
               }
               className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
@@ -115,11 +143,25 @@ const Home = () => {
             <label className="text-gray-700">সোনা (ভরি)</label>
             <input
               type="number"
-              value={assetDetails.gold}
+              value={(assetDetails.gold)}
               onChange={(e) =>
                 setAssetDetails((prev) => ({
                   ...prev,
-                  gold: parseInt(e.target.value) || 0,
+                  gold: parseInt(e.target.value),
+                }))
+              }
+              className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
+            />
+          </div>
+          <div>
+            <label className="text-gray-700">রৌপ্য (ভরি)</label>
+            <input
+              type="number"
+              value={(assetDetails.rupa)}
+              onChange={(e) =>
+                setAssetDetails((prev) => ({
+                  ...prev,
+                  rupa: parseInt(e.target.value),
                 }))
               }
               className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
@@ -129,11 +171,11 @@ const Home = () => {
             <label className="text-gray-700">মুদ্রা (টাকা)</label>
             <input
               type="number"
-              value={assetDetails.cash}
+              value={(assetDetails.cash)}
               onChange={(e) =>
                 setAssetDetails((prev) => ({
                   ...prev,
-                  cash: parseInt(e.target.value) || 0,
+                  cash: parseInt(e.target.value),
                 }))
               }
               className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
@@ -143,7 +185,7 @@ const Home = () => {
       </div>
 
       {/* Result Button */}
-      <button className="w-full py-2 bg-green-600 text-white rounded-md text-lg font-semibold hover:bg-green-700">
+      <button onClick={handleSubmit} className="w-full py-2 bg-green-600 text-white rounded-md text-lg font-semibold hover:bg-green-700">
         ফলাফল দেখুন
       </button>
     </div>
