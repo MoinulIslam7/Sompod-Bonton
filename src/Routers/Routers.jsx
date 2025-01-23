@@ -1,14 +1,11 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import DashboardLayout from '../layout/DashboardLayout';
 import ErrorPage from '../pages/ErrorPage/ErrorPage';
 import Loading from '../pages/Loading/Landing';
-import Dashboard from '../pages/Dashboard/Dashboard';
 const Home = lazy(() => import('../pages/Home/Home'));
-const Login = lazy(() => import('../pages/Login/Login'));
-const Payment = lazy(() => import('../pages/Payment/Payment'));
-const Shop = lazy(() => import('../pages/Shop/Shop'));
-const SignUp = lazy(() => import('../pages/SignUp/SignUp'));
+const AboutUs = lazy(() => import('../pages/About/Aboutus'));
+const PrivacyPolicy = lazy(() => import('../pages/Privacy-policy/Privacy-policy'));
+const Rules = lazy(() => import('../pages/Rules/Rules'));
 const Layout = lazy(() => import('../layout/Layout'));
 
 function Routers() {
@@ -18,13 +15,9 @@ function Routers() {
         <Routes>
           <Route path="/" element={<Layout />} >
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/sign-up" element={<SignUp />} />
-          </Route>
-          <Route path='/dashboard' element={<DashboardLayout />} >
-            <Route path='/dashboard' element={<Dashboard />}  />
+            <Route path="/aboutus" element={<AboutUs />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/rules" element={<Rules />} />
           </Route>
           <Route path="*" element={<ErrorPage />} />
         </Routes>

@@ -1,69 +1,110 @@
+/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Sora:wght@300;500;700&display=swap');
 
+/* Tailwind CSS directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
+/* Custom font face */
+@font-face {
+  font-family: "ComicSansMS";
+  src: url("../pages/fonts/Comic-Sans-MS.ttf");
+}
+
+/* Global styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FFFFD9;
+  font-family: "Nunito Sans", sans-serif;
+}
+
+.container {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+@media (max-width: 90rem) {
+  .container {
+    padding: 0 1rem;
+    margin: 0 auto;
+  }
+}
+
 @layer base {
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
+}
 
-  /* CSS for Swicth checkbox Start*/
-
+/* CSS for Switch checkbox Start */
 .slider {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  left: calc(50% - 16px / 2 - 10px);
+  top: calc(50% - 16px / 2);
+  background: rgba(29, 27, 32, 1);
+  opacity: 38%;
+  border-radius: 50%;
+  transition: all 0.2s ease-out;
+  cursor: pointer;
+}
 
-    width: 16px;
-  
-    height: 16px;
-  
-    position: absolute;
-  
-    left: calc(50% - 16px/2 - 10px);
-  
-    top: calc(50% - 16px/2);
-  
-    background: rgba(29, 27, 32, 1);
-  
-    opacity: 38%;
-  
-    border-radius: 50%;
-  
-    transition: all 0.2s ease-out;
-  
-    cursor: pointer;
-  
+.checkbox:checked+.switch {
+  background: #015958;
+  opacity: 100%;
+}
+
+.checkbox:checked+.switch .slider {
+  width: 24px;
+  height: 24px;
+  left: calc(50% - 24px / 2 + 10px);
+  top: calc(50% - 24px / 2);
+  background: #ffffff;
+  opacity: 100%;
+}
+
+
+.dot {
+  width: 24px;
+  /* Size of the dot */
+  height: 24px;
+  /* Size of the dot */
+  background-color: #00B050;
+  /* Using your primary color */
+  border-radius: 50%;
+  /* Make it a circle */
+  animation: bounce 0.6s infinite alternate;
+  /* Base animation */
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+  /* Delay for the second dot */
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+  /* Delay for the third dot */
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+    /* Start position */
   }
-  
-   
-  
-  .checkbox:checked+.switch {
-  
-    background: #015958;
-  
-    opacity: 100%;
-  
+
+  100% {
+    transform: translateY(-20px);
+    /* End position */
   }
-  
-   
-  
-  .checkbox:checked+.switch .slider {
-  
-    width: 24px;
-  
-    height: 24px;
-  
-    left: calc(50% - 24px/2 + 10px);
-  
-    top: calc(50% - 24px/2);
-  
-    background: #ffffff;
-  
-    opacity: 100%;
-  
-   
-  
-  }
+}
