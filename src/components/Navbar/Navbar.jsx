@@ -29,13 +29,13 @@ const Navbar = () => {
         <div className="container flex justify-between items-center">
           {/* Logo */}
           <NavLink to="/" className="z-10">
-            <img src="/logo.svg" alt="logo" width={50} height={56} className="object-contain" />
+            <img src="/logo.png" alt="logo" className="w-72" />
           </NavLink>
 
-          <div className="text-center">
+          {/* <div className="text-center">
             <h1 className="text-lg md:text-4xl text-center font-bold text-primary">উত্তরাধিকার.org</h1>
             <p className="text-xs md:text-base">সহজেই উত্তরাধিকার হিসাব করুন।</p>
-          </div>
+          </div> */}
 
 
           {/* Mobile Menu Toggle */}

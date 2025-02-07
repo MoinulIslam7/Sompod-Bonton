@@ -3,6 +3,7 @@ import CheckboxList from "./CheckboxList";
 import Result from "./Result";
 import toast from "react-hot-toast";
 import { calculateSharesWithRules } from ".";
+import { Helmet } from "react-helmet-async";
 
 // Function to convert English numbers to Bangla digits
 const englishToBanglaDigits = (number) => {
@@ -134,6 +135,11 @@ const HomePage = () => {
 
   return (
     <div className="container space-y-8">
+      <Helmet>
+        <title>Uttoradhikar</title>
+        <meta name="description" content="Welcome to Uttoradhikar, a platform for cultural heritage information." />
+        <meta name="keywords" content="cultural heritage, family, society" />
+      </Helmet>
       <CheckboxList
         title="আত্মীয়-স্বজনের তালিকা"
         items={items}
