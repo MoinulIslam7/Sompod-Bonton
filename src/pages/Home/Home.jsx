@@ -1,18 +1,24 @@
-import React, { useState } from "react";
-import CheckboxList from "../Checkbox/CheckboxList";
-import calculateShares from './index.js';
+import React, { useRef, useState } from "react";
+import CheckboxList from "./CheckboxList";
+import Result from "./Result";
+import toast from "react-hot-toast";
+import { calculateSharesWithRules } from ".";
+import { Helmet } from "react-helmet-async";
 
 // Function to convert English numbers to Bangla digits
 const englishToBanglaDigits = (number) => {
   const englishToBanglaMap = { 0: "০", 1: "১", 2: "২", 3: "৩", 4: "৪", 5: "৫", 6: "৬", 7: "৭", 8: "৮", 9: "৯" };
-  return number
-    .toString()
-    .split("")
-    .map((digit) => (englishToBanglaMap[digit] !== undefined ? englishToBanglaMap[digit] : digit))
-    .join("");
+  return number.toString().split("").map((digit) => (englishToBanglaMap[digit] !== undefined ? englishToBanglaMap[digit] : digit)).join("");
 };
 
-const Home = () => {
+const banglaToEnglishDigits = (str) => {
+  const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  return str?.split('').map((digit) => { const index = banglaDigits.indexOf(digit); return index !== -1 ? englishDigits[index] : digit; }).join('');
+};
+
+
+const HomePage = () => {
   const [items, setItems] = useState([
     { label: "স্বামী", checked: false, input: false, value: "1" },
     { label: "স্ত্রী", checked: false, input: true, value: "1" },
@@ -44,24 +50,59 @@ const Home = () => {
     { label: "চাচাতো ভাইয়ের পুত্রের পুত্র", checked: false, input: true, value: "1" },
   ]);
 
+  const [data, setData] = useState([]);
   const [memberCount, setMemberCount] = useState(0);
-  const [assetDetails, setAssetDetails] = useState({
-    gold: 0,
-    rupa: 0,
-    land: 0,
-    cash: 0,
-  });
+  const [assetDetails, setAssetDetails] = useState({ gold: 0, rupa: 0, land: 0, cash: 0 });
+  const landRef = useRef();
+  const goldRef = useRef();
+  const rupaRef = useRef();
+  const cashRef = useRef();
 
   const handleChange = (index, newValue = null) => {
-    const updatedItems = items.map((item, i) =>
-      i === index
-        ? {
+    const updatedItems = items.flatMap((item, i) => {
+      if (i === index) {
+
+        const isHusbandSelected = items.find((itm) => itm.label === "স্বামী" && itm.checked);
+        const isWifeSelected = items.find((itm) => itm.label === "স্ত্রী" && itm.checked);
+
+        if ((item.label === "স্বামী" && isWifeSelected) || (item.label === "স্ত্রী" && isHusbandSelected)) {
+          toast.error("স্বামী, স্ত্রী দুই আত্মীয় একসাথে থাকতে পারে না।");
+          return item;
+        }
+
+        const updatedItem = {
           ...item,
           checked: newValue === null ? !item.checked : item.checked,
           value: newValue !== null ? newValue : item.value,
+        };
+
+        // Dynamically add child items for "মৃত পুত্র" and "মৃত কন্যা"
+        if (["মৃত পুত্র", "মৃত কন্যা"].includes(item.label) && updatedItem.checked) {
+          const childCount = Number(updatedItem.value) || 1; // Default to 1 if value is invalid
+          // eslint-disable-next-line no-unused-vars
+          const childItems = Array.from({ length: childCount }).flatMap((_, idx) => [
+            {
+              // label: `${item.label} ${idx + 1} এর পুত্র`,
+              label: `${item.label} ১ এর পুত্র`,
+              checked: false,
+              input: true,
+              value: "1",
+            },
+            {
+              // label: `${item.label} ${idx + 1} এর কন্যা`,
+              label: `${item.label} ১ এর কন্যা`,
+              checked: false,
+              input: true,
+              value: "1",
+            },
+          ]);
+          return [updatedItem, ...childItems];
         }
-        : item
-    );
+
+        return [updatedItem];
+      }
+      return [item];
+    });
 
     setItems(updatedItems);
 
@@ -73,20 +114,32 @@ const Home = () => {
     setMemberCount(count);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Gather selected individuals and their input values
-    const selectedItems = items.filter(item => item.checked).map(item => ({
-      label: item.label,
-      value: item.value,
-    }));
-
-    // Call the inheritance logic to calculate shares
-    const result = calculateShares(selectedItems, assetDetails);
-    console.log(result); // You can display this in your UI or alert
+    const selectedItems = items.filter(item => item.checked).map(item => ({ label: item.label, value: item.value }));
+    const sortedSelectedItems = selectedItems.sort((a, b) => {
+      const order = ["মাতা", "পিতা", "স্বামী", "কন্যা", "দাদা", "পুত্র",];
+      return order.indexOf(a.label) - order.indexOf(b.label);
+    });
+    console.log(sortedSelectedItems);
+    // const assetValues = {
+    //     land: parseInt((landRef.current.value)) || 0,
+    //     gold: parseInt((goldRef.current.value)) || 0,
+    //     rupa: parseInt((rupaRef.current.value)) || 0,
+    //     cash: parseInt((cashRef.current.value)) || 0,
+    // };
+    const result = await calculateSharesWithRules(sortedSelectedItems, assetDetails);
+    console.log(result);
+    setData(result);
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 space-y-8">
+    <div className="container space-y-8">
+      <Helmet>
+        <title>Uttoradhikar</title>
+        <meta name="description" content="Welcome to Uttoradhikar, a platform for cultural heritage information." />
+        <meta name="keywords" content="cultural heritage, family, society" />
+      </Helmet>
       <CheckboxList
         title="আত্মীয়-স্বজনের তালিকা"
         items={items}
@@ -94,102 +147,130 @@ const Home = () => {
         toBangla={englishToBanglaDigits}
       />
 
-      {/* Member Details */}
-      <div className="p-4 border border-gray-300 rounded-lg bg-yellow-50">
-        <h2 className="bg-yellow-500 text-white text-lg font-semibold py-2 px-4 rounded-md mb-4">
-          সদস্য বিবরণ
-        </h2>
-        <div className="space-y-2">
-          {items
-            .filter((item) => item.checked)
-            .map((item, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-gray-700">{item.label}</span>
-                <span className="text-gray-700 font-medium">
-                  {englishToBanglaDigits(Number(item.value) || 0)}
-                </span>
+      <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+        <div className="p-4 border border-gray-300 rounded-lg bg-yellow-50 w-full lg:w-[50%]">
+          <h2 className="bg-third text-black text-[1.5rem] leading-[1.813rem] font-medium py-2 px-4 rounded-md mb-4">
+            সদস্য বিবরণ
+          </h2>
+          <div className="space-y-2">
+            {items
+              .filter((item) => item.checked)
+              .map((item, index) => (
+                <div key={index} className="flex justify-between items-center mb-3">
+                  <div className="flex justify-start items-center gap-3">
+                    <label
+                      htmlFor={`checkbox-${index}`}
+                      className={`w-[18px] h-[18px] flex items-center justify-center border border-[#333333] border-opacity-50 rounded-lg cursor-pointer ${item.checked ? 'bg-secondary border-transparent' : ''}`}
+                    >
+                      {item.checked && (
+                        <span className="text-white">✔</span>
+                      )}
+                    </label>
+                    <span className="text-xl leading-6 text-black">{item.label}</span>
+                  </div>
+                  <span className="text-primary text-2xl font-medium px-6 py-1 bg-white bg-opacity-50 border border-[#E7EAF3]">
+                    {englishToBanglaDigits(Number(item.value) || 0)}
+                  </span>
+                </div>
+              ))}
+          </div>
+          <div className="mt-4 p-6 bg-white flex justify-between items-center">
+            <span className="text-[1.5rem] leading-[1.813rem] font-medium text-secondary">মোট সদস্য সংখ্যা</span>
+            <span className="text-[2rem] leading-[2.496rem] font-medium text-black">
+              {englishToBanglaDigits(memberCount)}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-4 border border-gray-300 rounded-lg bg-yellow-50 w-full lg:w-[50%]">
+          <h2 className="bg-secondary text-white text-[1.5rem] leading-[1.813rem] font-medium py-2 px-4 rounded-md mb-5">
+            সম্পদের বিবরণ
+          </h2>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="text-black text-lg">জমি</label>
+              <div className="flex justify-between items-center mt-2  border border-[#E7EAF3] rounded">
+                <input
+                  type="text"
+                  ref={landRef}
+                  onChange={(e) => {
+                    const englishValue = banglaToEnglishDigits(e.target.value);
+                    e.target.value = englishToBanglaDigits(englishValue);
+                    if (!isNaN(englishValue)) { setAssetDetails((prev) => ({ ...prev, land: parseInt(englishValue) || 0 })); }
+                  }}
+                  className="w-full px-5 py-3 text-lg text-black outline-none"
+                />
+                <div className="mr-2 w-[4.375rem] px-2 py-2  bg-secondary text-lg text-white rounded-lg text-center">
+                  শতাংশ
+                </div>
               </div>
-            ))}
-        </div>
-        <div className="mt-4 border-t pt-4 flex justify-between items-center">
-          <span className="text-gray-800 font-semibold">মোট সদস্য সংখ্যা</span>
-          <span className="text-lg font-bold text-gray-900">
-            {englishToBanglaDigits(memberCount)}
-          </span>
-        </div>
-      </div>
+            </div>
+            <div>
+              <label className="text-black text-lg">স্বর্ণ</label>
+              <div className="flex justify-between items-center mt-2  border border-[#E7EAF3] rounded">
+                <input
+                  type="text"
+                  ref={goldRef}
+                  onChange={(e) => {
+                    const englishValue = banglaToEnglishDigits(e.target.value);
+                    e.target.value = englishToBanglaDigits(englishValue);
+                    if (!isNaN(englishValue)) { setAssetDetails((prev) => ({ ...prev, gold: parseInt(englishValue) || 0 })); }
+                  }}
+                  className="w-full px-5 py-3 text-lg text-black outline-none"
+                />
+                <div className="mr-2 w-[4.375rem] px-2 py-2  bg-secondary text-lg text-white rounded-lg text-center">
+                  ভরি
+                </div>
+              </div>
+            </div>
+            <div>
+              <label className="text-black text-lg">রৌপ্য</label>
+              <div className="flex justify-between items-center mt-2  border border-[#E7EAF3] rounded">
+                <input
+                  type="text"
+                  ref={rupaRef}
+                  onChange={(e) => {
+                    const englishValue = banglaToEnglishDigits(e.target.value);
+                    e.target.value = englishToBanglaDigits(englishValue);
+                    if (!isNaN(englishValue)) { setAssetDetails((prev) => ({ ...prev, rupa: parseInt(englishValue) || 0, })); }
 
-      {/* Asset Details */}
-      <div className="p-4 border border-gray-300 rounded-lg bg-yellow-50">
-        <h2 className="bg-yellow-500 text-white text-lg font-semibold py-2 px-4 rounded-md mb-4">
-          সম্পদের বিবরণ
-        </h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="text-gray-700">জমি (শতাংশ)</label>
-            <input
-              type="number"
-              value={(assetDetails.land)}
-              onChange={(e) =>
-                setAssetDetails((prev) => ({
-                  ...prev,
-                  land: parseInt(e.target.value),
-                }))
-              }
-              className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
-            />
+                  }}
+                  className="w-full px-5 py-3 text-lg text-black outline-none"
+                />
+                <div className="mr-2 w-[4.375rem] px-2 py-2  bg-secondary text-lg text-white rounded-lg text-center">
+                  ভরি
+                </div>
+              </div>
+            </div>
+            <div>
+              <label className="text-black text-lg">মুদ্রা</label>
+              <div className="flex justify-between items-center mt-2  border border-[#E7EAF3] rounded">
+                <input
+                  type="text"
+                  ref={cashRef}
+                  onChange={(e) => {
+                    const englishValue = banglaToEnglishDigits(e.target.value);
+                    e.target.value = englishToBanglaDigits(englishValue);
+                    if (!isNaN(englishValue)) { setAssetDetails((prev) => ({ ...prev, cash: parseInt(englishValue) || 0 })); }
+                  }}
+                  className="w-full px-5 py-3 text-lg text-black outline-none"
+                />
+                <div className="mr-2 w-[4.375rem] px-2 py-2  bg-secondary text-lg text-white rounded-lg text-center">
+                  টাকা
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="text-gray-700">সোনা (ভরি)</label>
-            <input
-              type="number"
-              value={(assetDetails.gold)}
-              onChange={(e) =>
-                setAssetDetails((prev) => ({
-                  ...prev,
-                  gold: parseInt(e.target.value),
-                }))
-              }
-              className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
-            />
-          </div>
-          <div>
-            <label className="text-gray-700">রৌপ্য (ভরি)</label>
-            <input
-              type="number"
-              value={(assetDetails.rupa)}
-              onChange={(e) =>
-                setAssetDetails((prev) => ({
-                  ...prev,
-                  rupa: parseInt(e.target.value),
-                }))
-              }
-              className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
-            />
-          </div>
-          <div>
-            <label className="text-gray-700">মুদ্রা (টাকা)</label>
-            <input
-              type="number"
-              value={(assetDetails.cash)}
-              onChange={(e) =>
-                setAssetDetails((prev) => ({
-                  ...prev,
-                  cash: parseInt(e.target.value),
-                }))
-              }
-              className="w-full h-8 border-gray-300 rounded focus:border-yellow-500 focus:ring focus:ring-yellow-200"
-            />
+          <div className="flex justify-end items-center">
+            <button onClick={handleSubmit} className="px-6 py-3 mt-6 bg-green-600 text-white rounded-md text-lg font-medium hover:bg-secondary">
+              ফলাফল দেখুন
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Result Button */}
-      <button onClick={handleSubmit} className="w-full py-2 bg-green-600 text-white rounded-md text-lg font-semibold hover:bg-green-700">
-        ফলাফল দেখুন
-      </button>
+      {data.length > 0 && <Result data={data} />}
     </div>
   );
 };
 
-export default Home;
+export default HomePage;

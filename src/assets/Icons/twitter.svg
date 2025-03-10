@@ -1,0 +1,19 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_b_118_407)">
+<rect width="32" height="32" rx="6" fill="#E8E8E8" fill-opacity="0.4"/>
+<g clip-path="url(#clip0_118_407)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M13.9118 10.5H9.5L14.7308 17.4092L9.83462 23.2052H12.0968L15.8 18.8215L19.0882 23.1649H23.5L18.1172 16.0548L18.1268 16.0671L22.7614 10.5807H20.4992L17.0574 14.655L13.9118 10.5ZM11.9352 11.71H13.3087L21.0648 21.9548H19.6913L11.9352 11.71Z" fill="white"/>
+</g>
+</g>
+<defs>
+<filter id="filter0_b_118_407" x="-40" y="-40" width="112" height="112" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feGaussianBlur in="BackgroundImageFix" stdDeviation="20"/>
+<feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_118_407"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_118_407" result="shape"/>
+</filter>
+<clipPath id="clip0_118_407">
+<rect width="15" height="15" fill="white" transform="translate(8.5 8.5)"/>
+</clipPath>
+</defs>
+</svg>

@@ -1,28 +1,38 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+const tailwindConfig = {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      colors:{
-        primary: '#001E17',
-        primary1: '#023535',
-        primary2: '#015958',
-        primary3: '#008F8C',
-        primary4: '#0CABA8',
-        primary5: '#0FC2C0',
-        light: '#E2E8F0',
-        gray:'#88A4AB',
-        label: '#88A4AB',
-        danger: '#e53e3e'
+      colors: {
+        primary: "#00B050",
+        secondary: "#EBB519",
+        third: "#FFF1CA",
+        black: "#333333"
       },
-      fontFamily:{
-        nunito: ['Nunito Sans', 'sans-serif'],
+      fontFamily: {
+        nunito: ["Nunito Sans", "sans-serif"],
+        // comicSansMS: ["ComicSansMS", "sans-serif"],
       },
-
+      animation: {
+        "spin-slow": "spin 4s linear infinite",
+        slide: "slide 6s linear infinite",
+      },
+      // keyframes: {
+      //   spin: {
+      //     "0%": { transform: "rotate(0deg)" },
+      //     "100%": { transform: "rotate(360deg)" },
+      //   },
+      //   slide: {
+      //     "0%": { top: "0%", left: "0%", width: "0%", height: "2px" },
+      //     "25%": { top: "0%", left: "0%", width: "100%", height: "2px" },
+      //     "50%": { top: "0%", right: "0%", width: "2px", height: "100%" },
+      //     "75%": { bottom: "0%", right: "0%", width: "100%", height: "2px" },
+      //     "100%": { bottom: "0%", left: "0%", width: "2px", height: "100%" },
+      //   },
+      // },
     },
   },
   plugins: [],
-}
+};
+
+export default tailwindConfig;
