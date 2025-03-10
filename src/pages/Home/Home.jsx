@@ -23,9 +23,7 @@ const HomePage = () => {
     { label: "স্বামী", checked: false, input: false, value: "1" },
     { label: "স্ত্রী", checked: false, input: true, value: "1" },
     { label: "পুত্র", checked: false, input: true, value: "1" },
-    { label: "মৃত পুত্র", checked: false, input: true, value: "1" },
     { label: "কন্যা", checked: false, input: true, value: "1" },
-    { label: "মৃত কন্যা", checked: false, input: true, value: "1" },
     { label: "পিতা", checked: false, input: true, value: "1" },
     { label: "মাতা", checked: false, input: true, value: "1" },
     { label: "দাদা", checked: false, input: true, value: "1" },
@@ -48,6 +46,8 @@ const HomePage = () => {
     { label: "চাচাতো ভাইয়ের পুত্র", checked: false, input: true, value: "1" },
     { label: "চাচাতো ভাই (বৈমাত্রেয়) এর পুত্র", checked: false, input: true, value: "1" },
     { label: "চাচাতো ভাইয়ের পুত্রের পুত্র", checked: false, input: true, value: "1" },
+    { label: "মৃত পুত্র", checked: false, input: true, value: "1" },
+    { label: "মৃত কন্যা", checked: false, input: true, value: "1" },
   ]);
 
   const [data, setData] = useState([]);
@@ -189,28 +189,33 @@ const HomePage = () => {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="text-black text-lg">জমি</label>
-              <div className="flex justify-between items-center mt-2  border border-[#E7EAF3] rounded">
+              <div className="flex justify-between items-center mt-2 border border-[#E7EAF3] rounded">
                 <input
                   type="text"
                   ref={landRef}
+                  value={englishToBanglaDigits(assetDetails.land)}
                   onChange={(e) => {
                     const englishValue = banglaToEnglishDigits(e.target.value);
+                    if (!isNaN(englishValue)) {
+                      setAssetDetails((prev) => ({ ...prev, land: parseInt(englishValue) || 0 }));
+                    }
                     e.target.value = englishToBanglaDigits(englishValue);
-                    if (!isNaN(englishValue)) { setAssetDetails((prev) => ({ ...prev, land: parseInt(englishValue) || 0 })); }
                   }}
                   className="w-full px-5 py-3 text-lg text-black outline-none"
                 />
-                <div className="mr-2 w-[4.375rem] px-2 py-2  bg-secondary text-lg text-white rounded-lg text-center">
+                <div className="mr-2 w-[4.375rem] px-2 py-2 bg-secondary text-lg text-white rounded-lg text-center">
                   শতাংশ
                 </div>
               </div>
             </div>
+
             <div>
               <label className="text-black text-lg">স্বর্ণ</label>
               <div className="flex justify-between items-center mt-2  border border-[#E7EAF3] rounded">
                 <input
                   type="text"
                   ref={goldRef}
+                  value={englishToBanglaDigits(assetDetails.gold)}
                   onChange={(e) => {
                     const englishValue = banglaToEnglishDigits(e.target.value);
                     e.target.value = englishToBanglaDigits(englishValue);
@@ -229,6 +234,7 @@ const HomePage = () => {
                 <input
                   type="text"
                   ref={rupaRef}
+                  value={englishToBanglaDigits(assetDetails.rupa)}
                   onChange={(e) => {
                     const englishValue = banglaToEnglishDigits(e.target.value);
                     e.target.value = englishToBanglaDigits(englishValue);
@@ -248,6 +254,7 @@ const HomePage = () => {
                 <input
                   type="text"
                   ref={cashRef}
+                  value={englishToBanglaDigits(assetDetails.cash)}
                   onChange={(e) => {
                     const englishValue = banglaToEnglishDigits(e.target.value);
                     e.target.value = englishToBanglaDigits(englishValue);
