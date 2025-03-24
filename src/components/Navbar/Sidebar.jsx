@@ -3,6 +3,8 @@ import HomeIcon from "../../assets/Icons/HomeRes.svg?react";
 import BidhiIcon from "../../assets/Icons/BidhiRes.svg?react";
 import AboutUsIcon from "../../assets/Icons/aboutus.svg?react";
 import PrivacyPolicyIcon from "../../assets/Icons/privacypolicy.svg?react";
+import BlogIcon from "../../assets/Icons/blog.svg?react";
+
 
 const Sidebar = ({ toggleSidebar, isOpen }) => {
     const [sidebarClass, setSidebarClass] = useState("translate-x-full");
@@ -19,7 +21,8 @@ const Sidebar = ({ toggleSidebar, isOpen }) => {
         { href: "/#home", label: "হোম", Icon: HomeIcon },
         { href: "/rules", label: "বিধি", Icon: BidhiIcon },
         { href: "/aboutus", label: "About Us", Icon: AboutUsIcon },
-        { href: "/privacy-policy", label: "Privacy Policy", Icon: PrivacyPolicyIcon },
+        { href: "/privacy-policy", label: "গোপনীয়তার নীতি", Icon: PrivacyPolicyIcon },
+        { href: "/blog", label: "ব্লগ", Icon: BlogIcon },
     ];
 
     const handleLinkClick = (href) => {
@@ -39,7 +42,7 @@ const Sidebar = ({ toggleSidebar, isOpen }) => {
                             onClick={() => handleLinkClick(href)}
                             className={`text-lg px-3 rounded transition-colors duration-300 flex gap-3 py-5 items-center`}
                         >
-                            <Icon />
+                            <Icon className="w-5 h-5" />
                             {label}
                         </a>
                     </li>
