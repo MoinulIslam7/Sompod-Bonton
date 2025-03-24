@@ -5,6 +5,8 @@ import HomeIcon from "../../assets/Icons/home.svg?react";
 import BidhiIcon from "../../assets/Icons/bidhi.svg?react";
 import AboutUs from "../../assets/Icons/aboutus.svg?react";
 import PrivacyPolicy from "../../assets/Icons/privacypolicy.svg?react";
+import Blog from "../../assets/Icons/blog.svg?react";
+
 import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
@@ -101,6 +103,16 @@ const Navbar = () => {
               >
                 <PrivacyPolicy />
                 গোপনীয়তার নীতি
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/blog"
+                className={`hover:bg-secondary hover:text-black transition-colors duration-300 flex items-center justify-center rounded-lg gap-2 p-2 px-5 ${activeTab === "blog" ? "bg-white text-secondary" : ""}`}
+                onClick={() => handleTabClick("blog")}
+              >
+                <Blog className="w-5 h-5" />
+                ব্লগ
               </NavLink>
             </li>
           </ul>

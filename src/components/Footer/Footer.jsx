@@ -17,7 +17,13 @@ const Footer = () => {
             </a>
             . All Rights Reserved.
           </span>
+
           <div className="flex mt-2 space-x-5 sm:justify-center sm:mt-0">
+            <div className='mr-5 flex items-center justify-center'>
+              <a href="/privacy-policy" className="text-white text-sm hover:underline">
+                Privacy Policy
+              </a>
+            </div>
             <a href="#" className="text-white">
               <Facebook />
             </a>
